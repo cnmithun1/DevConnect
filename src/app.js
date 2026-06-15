@@ -1,12 +1,26 @@
 const express = require("express");
 const app = express();
 
-app.use("/test", (req, res) => {
-  res.send("This is a test route");
+app.get("/user/:id", (req, res) => {
+  res.send("Got user data for specific ID");
 });
 
-app.use("/server", (req, res) => {
-  res.send("Hello from server");
+app.get("/user", (req, res) => {
+  res.send({
+    first: "John",
+    last: "Doe",
+    city: "New York",
+  });
+});
+
+app.post("/user", (req, res) => {
+  //add user logic
+  res.send("User added successfully");
+});
+
+app.delete("/user", (req, res) => {
+  //add user logic
+  res.send("User data deleted");
 });
 
 app.listen(7777, () => {
