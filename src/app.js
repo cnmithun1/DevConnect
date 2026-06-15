@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 
-app.get("/user/:id", (req, res) => {
+app.get("/user/:id/:name/:pwd", (req, res) => {
+  console.log(req.params);
   res.send("Got user data for specific ID");
 });
 
