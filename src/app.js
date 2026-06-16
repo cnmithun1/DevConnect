@@ -1,27 +1,24 @@
 const express = require("express");
 const app = express();
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
-app.get("/user/:id/:name/:pwd", (req, res) => {
-  console.log(req.params);
-  res.send("Got user data for specific ID");
+//Handle auth for all admin apis
+app.use("/admin", adminAuth);
+
+app.get("/admin", (req, res) => {
+  res.send("Hello Admin");
 });
 
-app.get("/user", (req, res) => {
-  res.send({
-    first: "John",
-    last: "Doe",
-    city: "New York",
-  });
+app.get("/admin/getAllData", (req, res) => {
+  res.send("This is admin data");
 });
 
-app.post("/user", (req, res) => {
-  //add user logic
-  res.send("User added successfully");
-});
-
-app.delete("/user", (req, res) => {
-  //add user logic
+app.delete("/admin/deleteUser", (req, res) => {
   res.send("User data deleted");
+});
+
+app.get("/user", userAuth, (req, res) => {
+  res.send("Hello User");
 });
 
 app.listen(7777, () => {
