@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const { adminAuth, userAuth } = require("./middlewares/auth");
-const connectDB = require("./config/database");
+const { connectDB } = require("./config/database");
 
 connectDB()
   .then(() => {

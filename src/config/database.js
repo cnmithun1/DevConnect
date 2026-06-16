@@ -7,8 +7,8 @@ dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const connectDB = async () => {
   await mongoose.connect(
-    "mongodb+srv://cnmithun1:cnmithun1@myfirstcluster.fltbk56.mongodb.net/",
+    "mongodb+srv://cnmithun1:cnmithun1@myfirstcluster.fltbk56.mongodb.net/devConnect",
   );
 };
 
-module.exports = connectDB;
+module.exports = { connectDB };
