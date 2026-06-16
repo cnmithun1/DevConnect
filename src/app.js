@@ -6,6 +6,7 @@ const { adminAuth, userAuth } = require("./middlewares/auth");
 app.use("/admin", adminAuth);
 
 app.get("/admin", (req, res) => {
+  // throw new Error("Something went wrong");
   res.send("Hello Admin");
 });
 
@@ -19,6 +20,18 @@ app.delete("/admin/deleteUser", (req, res) => {
 
 app.get("/user", userAuth, (req, res) => {
   res.send("Hello User");
+});
+
+// No auth for this api, anyone can access
+app.get("/products", (req, res) => {
+  res.send("This is product data");
+});
+
+//Error handler middleware
+app.use("/", (err, req, res, next) => {
+  if (err) {
+    res.status(500).send("Something went wrong");
+  }
 });
 
 app.listen(7777, () => {
