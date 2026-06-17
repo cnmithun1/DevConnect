@@ -4,14 +4,10 @@ const { adminAuth, userAuth } = require("./middlewares/auth");
 const { connectDB } = require("./config/database");
 const User = require("./models/user");
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Silpa Prajna",
-    lastName: "Nayak",
-    emailId: "silpa@example.com",
-    password: "password123",
-    gender: "Female",
-  });
+  const user = new User(req.body);
 
   try {
     await user.save();
