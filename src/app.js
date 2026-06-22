@@ -8,13 +8,15 @@ app.use(express.json());
 
 // signup
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
+    const user = new User(req.body);
     await user.save();
     res.send("User created successfully");
   } catch (err) {
-    res.status(500).send("Error creating user");
+    // if (err.code === 11000) {
+    //   return res.status(400).send("Email already exists");
+    // }
+    res.status(400).send("Error creating user " + err.message);
   }
 });
 
@@ -60,6 +62,33 @@ app.get("/user/:id", async (req, res) => {
     }
   } catch (err) {
     res.status(500).send("Error finding user by Id");
+  }
+});
+
+//update user by id
+app.patch("/user/:id", async (req, res) => {
+  const data = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, data, {
+      runValidators: true,
+    });
+    res.send("User updated successfully");
+  } catch (err) {
+    res.status(500).send("Error updating user " + err.message);
+  }
+});
+
+//delete user by id
+app.delete("/user/:id", async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send("User deleted successfully");
+    }
+  } catch (err) {
+    res.status(500).send("Error deleting user");
   }
 });
 
