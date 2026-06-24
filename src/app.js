@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(cookieParser());
+
 // signup
 app.post("/signup", async (req, res) => {
   try {
@@ -67,7 +68,6 @@ app.get("/profile", async (req, res) => {
       throw new Error("Token Expired");
     }
     const isTokenValid = await jwt.verify(token, "DEVConnect476");
-    console.log(isTokenValid);
     if (!isTokenValid) {
       throw new Error("Invalid Token");
     }
