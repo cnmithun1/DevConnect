@@ -5,9 +5,11 @@ const { connectDB } = require("./config/database");
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
-
+app.use(cookieParser());
 // signup
 app.post("/signup", async (req, res) => {
   try {
@@ -35,16 +37,46 @@ app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
     const user = await User.findOne({ emailId: emailId });
-    console.log(user);
     if (!user) {
       throw new Error("Enter valid data");
     }
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (isValidPassword) {
+      // Create a JWT token and send cookie
+      const jwtToken = await jwt.sign(
+        { _id: user._id, emailId: emailId },
+        "DEVConnect476",
+      );
+      res.cookie("token", jwtToken);
+
       res.send("Login Successfull");
     } else {
       throw new Error("Enter valid data");
     }
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
+//profile
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Token Expired");
+    }
+    const isTokenValid = await jwt.verify(token, "DEVConnect476");
+    console.log(isTokenValid);
+    if (!isTokenValid) {
+      throw new Error("Invalid Token");
+    }
+    const { _id } = isTokenValid;
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error("User not found");
+    }
+    res.send(user);
   } catch (err) {
     res.status(400).send("ERROR: " + err.message);
   }
