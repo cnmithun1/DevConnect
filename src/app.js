@@ -3,20 +3,30 @@ const app = express();
 const { adminAuth, userAuth } = require("./middlewares/auth");
 const { connectDB } = require("./config/database");
 const User = require("./models/user");
+const { validateSignupData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 app.use(express.json());
 
 // signup
 app.post("/signup", async (req, res) => {
   try {
-    const user = new User(req.body);
+    //validate of data
+    validateSignupData(req);
+    //hash the password
+    const { firstName, lastName, emailId, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: hashedPassword,
+    });
     await user.save();
     res.send("User created successfully");
   } catch (err) {
-    // if (err.code === 11000) {
-    //   return res.status(400).send("Email already exists");
-    // }
-    res.status(400).send("Error creating user " + err.message);
+    res.status(400).send("ERROR: " + err.message);
   }
 });
 
