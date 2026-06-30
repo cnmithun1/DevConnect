@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { adminAuth, userAuth } = require("./middlewares/auth");
+const { userAuth } = require("./middlewares/auth");
 const { connectDB } = require("./config/database");
 const User = require("./models/user");
 const { validateSignupData } = require("./utils/validation");
@@ -46,7 +46,7 @@ app.post("/login", async (req, res) => {
       // Create a JWT token and send cookie
       const jwtToken = await jwt.sign(
         { _id: user._id, emailId: emailId },
-        "DEVConnect476",
+        process.env.JWT_SECRET,
       );
       res.cookie("token", jwtToken);
 
@@ -60,19 +60,9 @@ app.post("/login", async (req, res) => {
 });
 
 //profile
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Token Expired");
-    }
-    const isTokenValid = await jwt.verify(token, "DEVConnect476");
-    if (!isTokenValid) {
-      throw new Error("Invalid Token");
-    }
-    const { _id } = isTokenValid;
-    const user = await User.findById(_id);
+    const user = req.user;
     if (!user) {
       throw new Error("User not found");
     }
