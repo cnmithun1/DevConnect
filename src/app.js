@@ -41,13 +41,10 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Enter valid data");
     }
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await user.validatePassword(password);
     if (isValidPassword) {
       // Create a JWT token and send cookie
-      const jwtToken = await jwt.sign(
-        { _id: user._id, emailId: emailId },
-        process.env.JWT_SECRET,
-      );
+      const jwtToken = await user.getJWT();
       res.cookie("token", jwtToken);
 
       res.send("Login Successfull");
